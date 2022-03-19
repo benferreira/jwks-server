@@ -32,6 +32,8 @@ func GenerateRSAPublicKeyPem() (string, error) {
 	buf := new(bytes.Buffer)
 	pem.Encode(buf, pubKeyBlock)
 
+	log.Debug().Msgf("generated public key: %s", buf.String())
+
 	return buf.String(), nil
 }
 
