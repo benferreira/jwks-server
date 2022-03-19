@@ -12,6 +12,8 @@ Basic http server that will host a JWKS generated from a provided RSA public key
     - [Routes](#routes)
     - [Flags](#flags)
     - [Test Mode](#test-mode)
+  - [Docker](#docker)
+    - [ARM variant](#arm-variant)
   - [Build](#build)
   - [Test](#test)
 
@@ -85,6 +87,24 @@ If you want to it out without providing your own key, set the test flag, `-t`. I
 
 # 11:41AM DBG parsed *rsa.PublicKey with remaining data: ""
 # 11:41AM INF serving localhost:8000
+```
+
+## Docker
+
+Run this in Docker.
+
+```sh
+make build-image
+
+docker run -p 8000:8000 ko.local/jwks-server -t
+```
+
+### ARM variant
+
+Build an ARM native image.
+
+```sh
+make build-image-arm
 ```
 
 ## Build

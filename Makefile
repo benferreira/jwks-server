@@ -1,6 +1,14 @@
-
+.PHONY: build
 build: clean
 	go build -o bin/ ./...
+
+.PHONY: build-image
+build-image: build
+	ko publish --base-import-paths --local ./cmd/jwks-server/
+
+.PHONY: build-image-arm
+build-image-arm: build
+	GOOS=linux GOARCH=arm64 ko publish --base-import-paths --local ./cmd/jwks-server/
 
 .PHONY: clean
 clean:
