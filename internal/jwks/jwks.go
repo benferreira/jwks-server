@@ -1,19 +1,15 @@
 package jwks
 
 import (
-	"bytes"
-	"crypto/rand"
-	"crypto/rsa"
-	"crypto/x509"
 	"encoding/base64"
-	"encoding/pem"
-	"fmt"
+	"jwks-server/internal/rsa_helper"
 )
 
 type JWKS struct {
 	Keys []JWK `json:"keys"`
 }
 
+// NewJWKS returns a JWKS with a JWK generated from the provided rsaPublicKey.
 func NewJWKS(rsaPublicKey string) (*JWKS, error) {
 	if rsaPublicKey != "" {
 		jwk, err := NewJWK(rsaPublicKey)
@@ -25,13 +21,17 @@ func NewJWKS(rsaPublicKey string) (*JWKS, error) {
 		return &JWKS{Keys: []JWK{*jwk}}, nil
 	}
 
-	generatedKey, err := generateRSAPublicKeyPem()
+	generatedKey, err := rsa_helper.GenerateRSAPublicKeyPem()
 
 	if err != nil {
 		return nil, err
 	}
 
 	jwk, err := NewJWK(generatedKey)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return &JWKS{Keys: []JWK{*jwk}}, nil
 }
@@ -47,19 +47,13 @@ type JWK struct {
 	X5c []string `json:"x5c,omitempty"`
 }
 
-func NewJWK(rsaPub string) (*JWK, error) {
-	block, _ := pem.Decode([]byte(rsaPub))
+// NewJWK returns a JWK generated from the provided rsaPublicKey.
+func NewJWK(rsaPublicKey string) (*JWK, error) {
+	publicKey, err := rsa_helper.DecodeAndParsePKIXPublicKey(rsaPublicKey)
 
-	if block == nil || block.Type != "PUBLIC KEY" {
-		return nil, fmt.Errorf("failed to decode PEM block containing public key")
-	}
-
-	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse PKIX public key")
+		return nil, err
 	}
-
-	publicKey := pub.(*rsa.PublicKey)
 
 	jwk := JWK{
 		Alg: "RS256",
@@ -69,27 +63,4 @@ func NewJWK(rsaPub string) (*JWK, error) {
 	}
 
 	return &jwk, nil
-}
-
-func generateRSAPublicKeyPem() (string, error) {
-	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
-
-	if err != nil {
-		return "", err
-	}
-
-	pubKeyBytes, err := x509.MarshalPKIXPublicKey(&privateKey.PublicKey)
-
-	if err != nil {
-		return "", err
-	}
-
-	pubKeyBlock := &pem.Block{
-		Type:  "PUBLIC KEY",
-		Bytes: pubKeyBytes,
-	}
-	buf := new(bytes.Buffer)
-	pem.Encode(buf, pubKeyBlock)
-
-	return buf.String(), nil
 }

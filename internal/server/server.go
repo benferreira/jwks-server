@@ -13,14 +13,14 @@ func Serve(port int, jwksJson string) {
 	})
 
 	http.HandleFunc("/api/v1/jwks.json", func(w http.ResponseWriter, r *http.Request) {
-		jwksRoute(w, r, jwksJson)
+		jwksHandler(w, r, jwksJson)
 	})
 
-	log.Info().Msgf("serving 127.0.0.1:%d", port)
+	log.Info().Msgf("serving localhost:%d", port)
 	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
 
-func jwksRoute(w http.ResponseWriter, r *http.Request, jwksJson string) {
+func jwksHandler(w http.ResponseWriter, r *http.Request, jwksJson string) {
 	if r.Method != "GET" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -28,5 +28,5 @@ func jwksRoute(w http.ResponseWriter, r *http.Request, jwksJson string) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprint(w, string(jwksJson))
+	fmt.Fprint(w, jwksJson)
 }

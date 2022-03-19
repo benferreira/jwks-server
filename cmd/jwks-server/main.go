@@ -39,6 +39,7 @@ func main() {
 
 func buildJWKS() (*jwks.JWKS, error) {
 	if *test {
+		log.Debug().Msg("test flag provided, generating RSA public key")
 		return jwks.NewJWKS("")
 	}
 
