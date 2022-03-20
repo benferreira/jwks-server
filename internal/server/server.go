@@ -8,19 +8,26 @@ import (
 )
 
 func Serve(port int, jwksJson string) {
-	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	})
+	http.HandleFunc("/health", HealthCheckHandler)
 
 	http.HandleFunc("/api/v1/jwks.json", func(w http.ResponseWriter, r *http.Request) {
-		jwksHandler(w, r, jwksJson)
+		JwksHandler(w, r, jwksJson)
 	})
 
 	log.Info().Msgf("serving localhost:%d", port)
 	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
 
-func jwksHandler(w http.ResponseWriter, r *http.Request, jwksJson string) {
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func JwksHandler(w http.ResponseWriter, r *http.Request, jwksJson string) {
 	if r.Method != "GET" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
