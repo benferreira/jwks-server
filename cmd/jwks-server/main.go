@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
+	"jwks-server/internal/config"
 	"jwks-server/internal/jwks"
 	"jwks-server/internal/server"
 	"os"
@@ -11,18 +11,16 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var debug = flag.Bool("d", false, "enable debug logging")
-var port = flag.Int("p", 8000, "http listening port")
-var test = flag.Bool("t", false, "generate an RSA key and serve a JWKS")
-
 func main() {
-	parseFlags()
+	conf, err := config.NewConfig()
 
-	if !*test && os.Getenv("RSA_PUB_KEY") == "" {
-		log.Fatal().Msg("RSA_PUB_KEY env var must be provided")
+	if err != nil {
+		log.Fatal().Err(err).Msg("invalid configuration")
 	}
 
-	constructedJWKS, err := buildJWKS()
+	configureLogging(conf.Debug, conf.PrettyLog)
+
+	constructedJWKS, err := buildJWKS(conf)
 
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to construct JWKS")
@@ -34,26 +32,30 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to marshall jwks to JSON")
 	}
 
-	server.Serve(*port, string(jwksJson))
+	server.Serve(conf.Port, string(jwksJson))
 }
 
-func buildJWKS() (*jwks.JWKS, error) {
-	if *test {
-		log.Debug().Msg("test flag provided, generating RSA public key")
+func buildJWKS(conf *config.Config) (*jwks.JWKS, error) {
+	if conf.TestMode {
+		log.Info().Msg("test mode enabled, generating RSA public key")
 		return jwks.NewJWKS("")
 	}
 
-	return jwks.NewJWKS(os.Getenv("RSA_PUB_KEY"))
+	return jwks.NewJWKS(conf.RsaPubKey)
 }
 
-func parseFlags() {
-	flag.Parse()
-
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
+func configureLogging(debug bool, pretty bool) {
 	//Set logging level
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	if *debug {
+
+	if debug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
+	if pretty {
+		log.Logger = log.Output(zerolog.ConsoleWriter{
+			Out:        os.Stderr,
+			TimeFormat: "2006-01-02T15:04:05.999Z07:00",
+		})
 	}
 }
