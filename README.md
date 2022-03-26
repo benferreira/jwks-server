@@ -10,7 +10,8 @@ Basic http server that will host a JWKS generated from a provided RSA public key
   - [Contents](#contents)
   - [Usage](#usage)
     - [Routes](#routes)
-    - [Flags](#flags)
+    - [Debug](#debug)
+    - [Pretty Logging](#pretty-logging)
     - [Test Mode](#test-mode)
   - [Docker](#docker)
     - [ARM variant](#arm-variant)
@@ -31,13 +32,13 @@ uQIDAQAB
 -----END PUBLIC KEY-----'
 
 ./bin/jwks-server
-# 11:36AM INF serving localhost:8000
+# {"level":"info","time":"2022-03-25T23:14:29-06:00","message":"serving localhost:8000"}
 ```
 
 Example response:
 
 ```sh
-> curl localhost:8000/api/v1/jwks.json | jq
+curl localhost:8000/api/v1/jwks.json | jq
 # {
 #   "keys": [
 #     {
@@ -57,36 +58,38 @@ The following routes are served:
 * /health
 * /api/v1/jwks.json
 
-### Flags
+### Debug
+
+Set `DEBUG=true` to run the server with debug logging enabled:
 
 ```sh
-./bin/jwks-server -h    
-# Usage of ./bin/jwks-server:
-#   -d    enable debug logging
-#   -p int
-#         http listening port (default 8000)
-#   -t    generate an RSA key and serve a JWKS
+export DEBUG=true
+./bin/jwks-server
+# {"level":"debug","time":"2022-03-25T23:12:52-06:00","message":"parsed *rsa.PublicKey with remaining data: \"\""}
+# {"level":"info","time":"2022-03-25T23:12:52-06:00","message":"serving localhost:8000"}
+```
+
+### Pretty Logging
+
+Enable pretty log format with the `PRETTY_LOGGING` environment variable:
+
+```sh
+export PRETTY_LOGGING=true
+# 2022-03-25T23:13:50-06:00 DBG parsed *rsa.PublicKey with remaining data: ""
+# 2022-03-25T23:13:50-06:00 INF serving localhost:8000
 ```
 
 ### Test Mode
 
-If you want to it out without providing your own key, set the test flag, `-t`. It will generate a random key and serve the JWKS:
+If you want to it out without providing your own key, set the test mode environment variable, `TEST_MODE`. It will generate a random key and serve the JWKS:
 
 ```sh
-./bin/jwks-server -t -d
-# 11:41AM DBG test flag provided, generating RSA public key
-# 11:41AM DBG generated public key: -----BEGIN PUBLIC KEY-----
-# MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsJfMtANIRRTG8GOVaeDx
-# KUhf6zvPI4Rwa1YDLdisPTbtI9BsfZhQGXQPYc226wgN9xJR/J7xyA/9T6y2Rykq
-# TtA6dnF50GW6C8w+Pb7J+ufFEkJXABUmZQMvZQaFbAHveV4yfqdwMh8YiEVr4ZPx
-# 9Idz1+NAdzOO5R8OnePikoThvPHBsmsW3Jdd5sjrno4Skb8NfoE8PnSxleQ4pGMK
-# o7q/bF0jPNzaX8G0dcCVUPo2YiRhULWWMzLHSTxZab5KGX88nlWc5wcCXhnqPyKS
-# WicX3mY6jEAkned3Rk7plum7DYgp+I0D/C7mxLZwG4JHry4Pq9ITnC+/bBvzu/RA
-# eQIDAQAB
-# -----END PUBLIC KEY-----
-
-# 11:41AM DBG parsed *rsa.PublicKey with remaining data: ""
-# 11:41AM INF serving localhost:8000
+export TEST_MODE=true
+./bin/jwks-server
+# {"level":"debug","time":"2022-03-25T23:15:01-06:00","message":"test mode enabled, generating RSA public key"}
+# {"level":"debug","time":"2022-03-25T23:15:02-06:00","message":"generated public key: -----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8G1Ac8R2W8zmqI0jRqYD\n29EIX0nPfR1n0y+M+3H+5hBujNJpoNE4wnItKnkG4F1nLNz0BBMwdN6idoNlqNGE\nngH42Nu6YLD8aWUtbdGTVDBSOkmco8sRqN4QJrT+O+PAownDVoe4+xiCA+DYO9WE\nDgLF71U9+ZUz9GF2FnFjMLDgTwJvc51SF/PwJT7RXTrbWvGWnetBQHW59tHG7M/Q\nES5RhMUUHX6ZeQTJ+soquomnDmcqTZ8PxTOT6675SAbMPvc4yk59zmkb32H+RTWp\n2wcKDNHm/kiKfJ5VYlZBfjSRapJCCjI9unWpCP7br23tbd3Gh6/Ln9JocYPOeWG/\nIQIDAQAB\n-----END PUBLIC KEY-----\n"}
+# {"level":"debug","time":"2022-03-25T23:15:02-06:00","message":"parsed *rsa.PublicKey with remaining data: \"\""}
+# {"level":"info","time":"2022-03-25T23:15:02-06:00","message":"serving localhost:8000"}
 ```
 
 ## Docker
@@ -96,7 +99,7 @@ Run this in Docker.
 ```sh
 make build-image
 
-docker run -p 8000:8000 ko.local/jwks-server -t
+docker run -p 8000:8000 -e TEST_MODE=true ko.local/jwks-server
 ```
 
 ### ARM variant
