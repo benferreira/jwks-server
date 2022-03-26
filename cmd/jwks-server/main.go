@@ -38,10 +38,10 @@ func main() {
 func buildJWKS(conf *config.Config) (*jwks.JWKS, error) {
 	if conf.TestMode {
 		log.Info().Msg("test mode enabled, generating RSA public key")
-		return jwks.NewJWKS("")
+		return jwks.NewJWKS(nil)
 	}
 
-	return jwks.NewJWKS(conf.RsaPubKey)
+	return jwks.NewJWKS(conf.RsaPubKeys)
 }
 
 func configureLogging(debug bool, pretty bool) {

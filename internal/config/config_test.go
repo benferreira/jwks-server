@@ -23,7 +23,7 @@ func TestNewConfig(t *testing.T) {
 	assert.Equal(t, true, conf.Debug)
 	assert.Equal(t, 8080, conf.Port)
 	assert.Equal(t, true, conf.PrettyLog)
-	assert.Equal(t, os.Getenv("RSA_PUB_KEY"), conf.RsaPubKey)
+	assert.Equal(t, os.Getenv("RSA_PUB_KEY"), conf.RsaPubKeys[0].Key)
 }
 
 func TestNewConfigMinimumRequiredVars(t *testing.T) {
@@ -44,7 +44,7 @@ func TestNewConfigMinimumRequiredVars(t *testing.T) {
 	conf, err = config.NewConfig()
 	assert.Nil(t, err, "should not have errored")
 	assert.NotNil(t, conf, "config should be returned")
-	assert.Equal(t, os.Getenv("RSA_PUB_KEY"), conf.RsaPubKey)
+	assert.Equal(t, os.Getenv("RSA_PUB_KEY"), conf.RsaPubKeys[0].Key)
 }
 
 func TestNewConfigBadPort(t *testing.T) {

@@ -7,11 +7,16 @@ import (
 )
 
 type Config struct {
-	Debug     bool
-	Port      int
-	PrettyLog bool
-	RsaPubKey string
-	TestMode  bool
+	Debug      bool
+	Port       int
+	PrettyLog  bool
+	RsaPubKeys []RSAPubKey
+	TestMode   bool
+}
+
+type RSAPubKey struct {
+	Key string
+	Kid string
 }
 
 func NewConfig() (*Config, error) {
@@ -45,7 +50,8 @@ func NewConfig() (*Config, error) {
 	}
 
 	if rsaKey, ok := os.LookupEnv("RSA_PUB_KEY"); ok {
-		conf.RsaPubKey = rsaKey
+		conf.RsaPubKeys = make([]RSAPubKey, 0)
+		conf.RsaPubKeys = append(conf.RsaPubKeys, RSAPubKey{Key: rsaKey})
 	} else {
 		return nil, fmt.Errorf("RSA_PUB_KEY env var must be provided")
 	}
