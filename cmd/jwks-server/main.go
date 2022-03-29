@@ -12,7 +12,13 @@ import (
 )
 
 func main() {
-	conf, err := config.NewConfig()
+	file, err := os.Open("./config/config.yaml")
+
+	if err != nil {
+		log.Fatal().Err(err).Msg("unable to read config file")
+	}
+
+	conf, err := config.NewConfigFromFile(file)
 
 	if err != nil {
 		log.Fatal().Err(err).Msg("invalid configuration")
