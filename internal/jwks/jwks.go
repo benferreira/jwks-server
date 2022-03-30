@@ -69,7 +69,7 @@ func NewJWK(rsaPublicKey config.RSAPubKey) (*JWK, error) {
 	jwk := JWK{
 		Alg: "RS256",
 		Kty: "RSA",
-		N:   base64.RawStdEncoding.EncodeToString(publicKey.N.Bytes()),
+		N:   base64.RawURLEncoding.EncodeToString(publicKey.N.Bytes()),
 		E:   "AQAB",
 	}
 
