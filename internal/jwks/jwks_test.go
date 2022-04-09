@@ -41,6 +41,25 @@ func TestNewJWKSWithProvidedKey(t *testing.T) {
 	assert.Equal(t, "AQAB", keySet.Keys[0].E)
 }
 
+func TestNewJWKSWIthMultipleKeys(t *testing.T) {
+	key1, _ := rsa_helper.GenerateRSAPublicKeyPem()
+	key2, _ := rsa_helper.GenerateRSAPublicKeyPem()
+
+	pubKeys, _ := config.NewRSAPubKeys(key1)
+	pubKeys.RSAPubKeys[0].Kid = "key1"
+	pubKeys.RSAPubKeys = append(pubKeys.RSAPubKeys, config.RSAPubKey{Key: key2, Kid: "key2"})
+
+	keySet, err := jwks.NewJWKS(pubKeys)
+	assert.Nil(t, err, "should have generated a keyset")
+	assert.NotNil(t, keySet, "should have generated a keyset")
+	assert.Equal(t, "key1", keySet.Keys[0].Kid)
+	assert.Equal(t, "key2", keySet.Keys[1].Kid)
+
+	for _, key := range keySet.Keys {
+		assert.NotNil(t, key.N)
+	}
+}
+
 func TestNewJWK(t *testing.T) {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	assert.Nil(t, err, "should have generated an RSA key")
