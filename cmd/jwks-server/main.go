@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	conf, err := config.NewConfig()
+	conf, err := config.NewConfigFromEnv()
 
 	if err != nil {
 		log.Fatal().Err(err).Msg("invalid configuration")
@@ -38,10 +38,10 @@ func main() {
 func buildJWKS(conf *config.Config) (*jwks.JWKS, error) {
 	if conf.TestMode {
 		log.Info().Msg("test mode enabled, generating RSA public key")
-		return jwks.NewJWKS("")
+		return jwks.NewJWKS(nil)
 	}
 
-	return jwks.NewJWKS(conf.RsaPubKey)
+	return jwks.NewJWKS(conf.PublicKeys)
 }
 
 func configureLogging(debug bool, pretty bool) {

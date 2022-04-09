@@ -7,14 +7,14 @@ import (
 )
 
 type Config struct {
-	Debug     bool
-	Port      int
-	PrettyLog bool
-	RsaPubKey string
-	TestMode  bool
+	Debug      bool
+	Port       int
+	PrettyLog  bool
+	PublicKeys *RSAPubKeys
+	TestMode   bool
 }
 
-func NewConfig() (*Config, error) {
+func NewConfigFromEnv() (*Config, error) {
 	conf := Config{
 		Debug:    false,
 		Port:     8000,
@@ -45,10 +45,48 @@ func NewConfig() (*Config, error) {
 	}
 
 	if rsaKey, ok := os.LookupEnv("RSA_PUB_KEY"); ok {
-		conf.RsaPubKey = rsaKey
-	} else {
-		return nil, fmt.Errorf("RSA_PUB_KEY env var must be provided")
+		if keys, err := NewRSAPubKeys(rsaKey); err == nil {
+			conf.PublicKeys = keys
+		} else {
+			return nil, err
+		}
+	} else if path, ok := os.LookupEnv("RSA_KEYS_FILE"); ok {
+		if keys, err := keysFromFile(path); err == nil {
+			conf.PublicKeys = keys
+		} else {
+			return nil, err
+		}
+	}
+
+	if err := conf.validate(); err != nil {
+		return nil, err
 	}
 
 	return &conf, nil
+}
+
+func keysFromFile(path string) (*RSAPubKeys, error) {
+	if file, err := os.Open(path); err == nil {
+		return NewRSAPubKeysFromFile(file)
+	} else {
+		return nil, err
+	}
+}
+
+func (c Config) validate() error {
+
+	if c.Port == 0 {
+		return fmt.Errorf("invalid configuration, port must be set")
+	}
+
+	//If test mode is enabled, RsaPubKey is not required
+	if c.TestMode {
+		return nil
+	}
+
+	if c.PublicKeys == nil {
+		return fmt.Errorf("invalid configuration, missing public keys")
+	}
+
+	return nil
 }

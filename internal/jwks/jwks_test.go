@@ -6,6 +6,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"jwks-server/internal/config"
 	"jwks-server/internal/jwks"
 	"jwks-server/internal/rsa_helper"
 	"testing"
@@ -14,7 +15,7 @@ import (
 )
 
 func TestNewJWKSGeneration(t *testing.T) {
-	keySet, err := jwks.NewJWKS("")
+	keySet, err := jwks.NewJWKS(nil)
 
 	assert.Nil(t, err, "should not have errored")
 	assert.NotNil(t, keySet, "should have returned keyset")
@@ -27,8 +28,9 @@ func TestNewJWKSGeneration(t *testing.T) {
 
 func TestNewJWKSWithProvidedKey(t *testing.T) {
 	key, _ := rsa_helper.GenerateRSAPublicKeyPem()
+	pubKeys, _ := config.NewRSAPubKeys(key)
 
-	keySet, err := jwks.NewJWKS(key)
+	keySet, err := jwks.NewJWKS(pubKeys)
 
 	assert.Nil(t, err, "should not have errored")
 	assert.NotNil(t, keySet, "should have returned keyset")
@@ -46,7 +48,7 @@ func TestNewJWK(t *testing.T) {
 	pubKeyString, err := marshalToPem(privateKey)
 	assert.Nil(t, err, "should have marshalled key")
 
-	jwk, err := jwks.NewJWK(pubKeyString)
+	jwk, err := jwks.NewJWK(config.RSAPubKey{Key: pubKeyString})
 	assert.Nil(t, err, "should not have errored")
 	assert.NotNil(t, jwk, "should have generated jwk")
 }
