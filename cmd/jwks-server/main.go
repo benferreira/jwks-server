@@ -32,7 +32,11 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to marshall jwks to JSON")
 	}
 
-	server.Serve(conf.Port, string(jwksJson))
+	serv := server.NewServer(conf.Port, string(jwksJson))
+
+	if err := serv.Start(); err != nil {
+		log.Fatal().Err(err).Msg("server error")
+	}
 }
 
 func buildJWKS(conf *config.Config) (*jwks.JWKS, error) {

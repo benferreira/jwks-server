@@ -7,15 +7,36 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func Serve(port int, jwksJson string) {
-	http.HandleFunc("/health", HealthCheckHandler)
+type Server struct {
+	*http.Server
+}
 
-	http.HandleFunc("/api/v1/jwks.json", func(w http.ResponseWriter, r *http.Request) {
+// NewServer constructs a new http.Server and registers the handlers
+func NewServer(port int, jwksJson string) *Server {
+	mux := http.NewServeMux()
+	serv := Server{
+		&http.Server{
+			Addr:    fmt.Sprintf(":%d", port),
+			Handler: mux,
+		},
+	}
+
+	mux.HandleFunc("/health", HealthCheckHandler)
+
+	mux.HandleFunc("/api/v1/jwks.json", func(w http.ResponseWriter, r *http.Request) {
 		JwksHandler(w, r, jwksJson)
 	})
+	return &serv
+}
 
-	log.Info().Msgf("serving localhost:%d", port)
-	http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+func (serv *Server) Start() error {
+	log.Info().Msgf("serving localhost%s", serv.Addr)
+
+	if err := serv.ListenAndServe(); err != http.ErrServerClosed {
+		return err
+	}
+
+	return nil
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
