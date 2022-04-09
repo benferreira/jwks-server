@@ -172,7 +172,7 @@ Run this in Docker.
 ```sh
 make build-image
 
-docker run -p 8000:8000 -e TEST_MODE=true ko.local/jwks-server
+docker run --rm -p 8000:8000 -e TEST_MODE=true ko.local/jwks-server
 ```
 
 ### ARM variant
