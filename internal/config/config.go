@@ -2,48 +2,19 @@ package config
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 	"os"
 	"strconv"
-
-	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	Debug      bool        `yaml:"debug"`
-	Port       int         `yaml:"port"`
-	PrettyLog  bool        `yaml:"prettyLogging"`
-	RsaPubKeys []RSAPubKey `yaml:"rsaPubKeys"`
-	TestMode   bool        `yaml:"testMode"`
+	Debug      bool
+	Port       int
+	PrettyLog  bool
+	PublicKeys *RSAPubKeys
+	TestMode   bool
 }
 
-type RSAPubKey struct {
-	Key string `yaml:"key"`
-	Kid string `yaml:"kid"`
-}
-
-func (c Config) ok() error {
-	if c.TestMode {
-		return nil
-	}
-
-	if c.RsaPubKeys == nil || len(c.RsaPubKeys) == 0 {
-		return fmt.Errorf("invalid configuration, missing public key(s)")
-	}
-
-	return nil
-}
-
-func (r RSAPubKey) ok() error {
-	if r.Key == "" {
-		return fmt.Errorf("invalid configuration, public key value is missing")
-	}
-
-	return nil
-}
-
-func NewConfig() (*Config, error) {
+func NewConfigFromEnv() (*Config, error) {
 	conf := Config{
 		Debug:    false,
 		Port:     8000,
@@ -74,26 +45,48 @@ func NewConfig() (*Config, error) {
 	}
 
 	if rsaKey, ok := os.LookupEnv("RSA_PUB_KEY"); ok {
-		conf.RsaPubKeys = make([]RSAPubKey, 0)
-		conf.RsaPubKeys = append(conf.RsaPubKeys, RSAPubKey{Key: rsaKey})
-	} else {
-		return nil, fmt.Errorf("RSA_PUB_KEY env var must be provided")
+		if keys, err := NewRSAPubKeys(rsaKey); err == nil {
+			conf.PublicKeys = keys
+		} else {
+			return nil, err
+		}
+	} else if path, ok := os.LookupEnv("RSA_KEYS_FILE"); ok {
+		if keys, err := keysFromFile(path); err == nil {
+			conf.PublicKeys = keys
+		} else {
+			return nil, err
+		}
+	}
+
+	if err := conf.validate(); err != nil {
+		return nil, err
 	}
 
 	return &conf, nil
 }
 
-func NewConfigFromFile(reader io.Reader) (*Config, error) {
-	configBytes, err := ioutil.ReadAll(reader)
-
-	if err != nil {
+func keysFromFile(path string) (*RSAPubKeys, error) {
+	if file, err := os.Open(path); err == nil {
+		return NewRSAPubKeysFromFile(file)
+	} else {
 		return nil, err
 	}
+}
 
-	config := Config{}
-	if err = yaml.Unmarshal(configBytes, &config); err != nil {
-		return nil, err
+func (c Config) validate() error {
+
+	if c.Port == 0 {
+		return fmt.Errorf("invalid configuration, port must be set")
 	}
 
-	return &config, nil
+	//If test mode is enabled, RsaPubKey is not required
+	if c.TestMode {
+		return nil
+	}
+
+	if c.PublicKeys == nil {
+		return fmt.Errorf("invalid configuration, missing public keys")
+	}
+
+	return nil
 }

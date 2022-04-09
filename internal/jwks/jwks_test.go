@@ -28,7 +28,7 @@ func TestNewJWKSGeneration(t *testing.T) {
 
 func TestNewJWKSWithProvidedKey(t *testing.T) {
 	key, _ := rsa_helper.GenerateRSAPublicKeyPem()
-	pubKeys := []config.RSAPubKey{{Key: key}}
+	pubKeys, _ := config.NewRSAPubKeys(key)
 
 	keySet, err := jwks.NewJWKS(pubKeys)
 

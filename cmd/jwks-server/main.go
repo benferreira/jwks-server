@@ -12,13 +12,7 @@ import (
 )
 
 func main() {
-	file, err := os.Open("./config/config.yaml")
-
-	if err != nil {
-		log.Fatal().Err(err).Msg("unable to read config file")
-	}
-
-	conf, err := config.NewConfigFromFile(file)
+	conf, err := config.NewConfigFromEnv()
 
 	if err != nil {
 		log.Fatal().Err(err).Msg("invalid configuration")
@@ -47,7 +41,7 @@ func buildJWKS(conf *config.Config) (*jwks.JWKS, error) {
 		return jwks.NewJWKS(nil)
 	}
 
-	return jwks.NewJWKS(conf.RsaPubKeys)
+	return jwks.NewJWKS(conf.PublicKeys)
 }
 
 func configureLogging(debug bool, pretty bool) {

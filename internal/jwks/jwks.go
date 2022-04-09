@@ -11,14 +11,14 @@ type JWKS struct {
 }
 
 // NewJWKS returns a JWKS with a JWK generated from the provided rsaPublicKey.
-func NewJWKS(keys []config.RSAPubKey) (*JWKS, error) {
+func NewJWKS(keys *config.RSAPubKeys) (*JWKS, error) {
 	if keys == nil {
 		return generateJWKS()
 	}
 
 	jwks := JWKS{Keys: make([]JWK, 0)}
 
-	for _, key := range keys {
+	for _, key := range keys.RSAPubKeys {
 		jwk, err := NewJWK(key)
 
 		if err != nil {
