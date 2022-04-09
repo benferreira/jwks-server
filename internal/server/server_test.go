@@ -1,14 +1,48 @@
 package server_test
 
 import (
+	"context"
 	"io/ioutil"
 	"jwks-server/internal/server"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestServe(t *testing.T) {
+	serv := server.NewServer(45566, `{"test":"json"}`)
+
+	go func() {
+		client := http.Client{Timeout: time.Duration(1) * time.Second}
+
+		resp, err := client.Get("http://127.0.0.1:45566/health")
+		assert.Nil(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+		serv.Shutdown(context.Background())
+	}()
+
+	err := serv.Start()
+	assert.Nil(t, err)
+}
+
+func TestServePortCollision(t *testing.T) {
+	serv := server.NewServer(45566, `{"test":"json"}`)
+	serv2 := server.NewServer(45566, `{"test":"json"}`)
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		err := serv2.Start()
+		assert.NotNil(t, err, "should error due to port collision")
+		serv.Shutdown(context.Background())
+		serv2.Shutdown(context.Background())
+	}()
+
+	serv.Start()
+}
 
 func TestHealth(t *testing.T) {
 	r := httptest.NewRequest(http.MethodGet, "/health", nil)
