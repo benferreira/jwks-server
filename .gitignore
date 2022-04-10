@@ -20,4 +20,9 @@
 # VSCode
 .vscode
 
+# Keys
+*.crt
+*.csr
+*.key
+
 /bin

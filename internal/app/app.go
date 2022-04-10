@@ -40,7 +40,11 @@ func Init() *App {
 		log.Fatal().Err(err).Msg("failed to marshall jwks to JSON")
 	}
 
-	app.Server = server.NewServer(conf.Port, string(jwksJson))
+	app.Server, err = server.NewServer(conf.ServerConfig, string(jwksJson))
+
+	if err != nil {
+		log.Fatal().Err(err).Msg("invalid server configuration")
+	}
 
 	return &app
 }

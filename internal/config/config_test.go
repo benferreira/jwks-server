@@ -1,6 +1,7 @@
 package config_test
 
 import (
+	test_helper "jwks-server/_test_helper"
 	"jwks-server/internal/config"
 	"os"
 	"testing"
@@ -9,8 +10,8 @@ import (
 )
 
 func TestNewConfig(t *testing.T) {
-	unsetVars()
-	defer unsetVars()
+	test_helper.UnsetTestEnvironment()
+	defer test_helper.UnsetTestEnvironment()
 
 	os.Setenv("DEBUG", "true")
 	os.Setenv("PORT", "8080")
@@ -27,8 +28,8 @@ func TestNewConfig(t *testing.T) {
 }
 
 func TestNewConfigMinimumRequiredVars(t *testing.T) {
-	unsetVars()
-	defer unsetVars()
+	test_helper.UnsetTestEnvironment()
+	defer test_helper.UnsetTestEnvironment()
 
 	_, err := config.NewConfigFromEnv()
 	assert.NotNil(t, err, "should have errored")
@@ -39,7 +40,7 @@ func TestNewConfigMinimumRequiredVars(t *testing.T) {
 	assert.NotNil(t, conf, "config should be returned")
 	assert.Equal(t, true, conf.TestMode)
 
-	unsetVars()
+	test_helper.UnsetTestEnvironment()
 	os.Setenv("RSA_PUB_KEY", "somePublicKey")
 	conf, err = config.NewConfigFromEnv()
 	assert.Nil(t, err, "should not have errored")
@@ -48,19 +49,10 @@ func TestNewConfigMinimumRequiredVars(t *testing.T) {
 }
 
 func TestNewConfigBadPort(t *testing.T) {
-	unsetVars()
-	defer unsetVars()
+	test_helper.UnsetTestEnvironment()
+	defer test_helper.UnsetTestEnvironment()
 
 	os.Setenv("PORT", "badPort")
 	_, err := config.NewConfigFromEnv()
 	assert.NotNil(t, err, "should have errored due to invalid port")
-}
-
-func unsetVars() {
-	os.Unsetenv("DEBUG")
-	os.Unsetenv("PORT")
-	os.Unsetenv("PRETTY_LOGGING")
-	os.Unsetenv("TEST_MODE")
-	os.Unsetenv("RSA_PUB_KEY")
-	os.Unsetenv("RSA_KEYS_FILE")
 }

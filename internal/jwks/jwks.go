@@ -71,10 +71,7 @@ func NewJWK(rsaPublicKey config.RSAPubKey) (*JWK, error) {
 		Kty: "RSA",
 		N:   base64.RawURLEncoding.EncodeToString(publicKey.N.Bytes()),
 		E:   "AQAB",
-	}
-
-	if rsaPublicKey.Kid != "" {
-		jwk.Kid = rsaPublicKey.Kid
+		Kid: rsaPublicKey.Kid,
 	}
 
 	return &jwk, nil

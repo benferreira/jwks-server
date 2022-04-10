@@ -3,6 +3,7 @@ package server_test
 import (
 	"context"
 	"io/ioutil"
+	"jwks-server/internal/config"
 	"jwks-server/internal/server"
 	"net/http"
 	"net/http/httptest"
@@ -13,7 +14,8 @@ import (
 )
 
 func TestServe(t *testing.T) {
-	serv := server.NewServer(45566, `{"test":"json"}`)
+	serv, err := server.NewServer(&config.ServerConfig{Port: 45566}, `{"test":"json"}`)
+	assert.Nil(t, err)
 
 	go func() {
 		client := http.Client{Timeout: time.Duration(1) * time.Second}
@@ -25,13 +27,14 @@ func TestServe(t *testing.T) {
 		serv.Shutdown(context.Background())
 	}()
 
-	err := serv.Start()
+	err = serv.Start()
 	assert.Nil(t, err)
 }
 
 func TestServePortCollision(t *testing.T) {
-	serv := server.NewServer(45566, `{"test":"json"}`)
-	serv2 := server.NewServer(45566, `{"test":"json"}`)
+	conf := config.ServerConfig{Port: 45566}
+	serv, _ := server.NewServer(&conf, `{"test":"json"}`)
+	serv2, _ := server.NewServer(&conf, `{"test":"json"}`)
 
 	go func() {
 		err := serv2.Start()
