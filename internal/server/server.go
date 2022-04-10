@@ -45,7 +45,9 @@ func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, HealthCheckUpJson())
 }
 
 func JwksHandler(w http.ResponseWriter, r *http.Request, jwksJson string) {
@@ -54,7 +56,8 @@ func JwksHandler(w http.ResponseWriter, r *http.Request, jwksJson string) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "public, max-age=15, stale-while-revalidate=15, stale-if-error=86400")
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, jwksJson)
 }
