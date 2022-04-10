@@ -49,8 +49,14 @@ func TestHealth(t *testing.T) {
 
 	server.HealthCheckHandler(w, r)
 	result := w.Result()
+	defer result.Body.Close()
 
 	assert.Equal(t, http.StatusOK, result.StatusCode)
+	assert.Equal(t, "application/json", result.Header.Get("content-type"))
+
+	body, err := ioutil.ReadAll(result.Body)
+	assert.Nil(t, err)
+	assert.Equal(t, server.HealthCheckUpJson(), string(body))
 }
 
 func TestHealthBadRequest(t *testing.T) {
@@ -74,6 +80,8 @@ func TestJWKS(t *testing.T) {
 	defer result.Body.Close()
 
 	assert.Equal(t, http.StatusOK, result.StatusCode)
+	assert.Equal(t, "application/json", result.Header.Get("content-type"))
+	assert.NotEmpty(t, result.Header.Get("cache-control"))
 
 	body, err := ioutil.ReadAll(result.Body)
 	assert.Nil(t, err, "should not have errored")
