@@ -34,7 +34,6 @@ func TestServePortCollision(t *testing.T) {
 	serv2 := server.NewServer(45566, `{"test":"json"}`)
 
 	go func() {
-		time.Sleep(1 * time.Second)
 		err := serv2.Start()
 		assert.NotNil(t, err, "should error due to port collision")
 		serv.Shutdown(context.Background())
