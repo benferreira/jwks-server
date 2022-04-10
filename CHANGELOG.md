@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+### [0.2.2](https://github.com/benferreira/jwks-server/compare/v0.2.1...v0.2.2) (2022-04-10)
+
+
+### Bug Fixes
+
+* content-type header response ([#17](https://github.com/benferreira/jwks-server/issues/17)) ([de60194](https://github.com/benferreira/jwks-server/commit/de601944a160b207d1fce18a5cb80306ac5ef03c))
+
 ### [0.2.1](https://github.com/benferreira/jwks-server/compare/v0.2.0...v0.2.1) (2022-04-09)
 
 
