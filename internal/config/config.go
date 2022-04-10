@@ -56,7 +56,6 @@ func NewConfigFromEnv() (*Config, error) {
 
 	if _, ok := os.LookupEnv("TEST_MODE"); ok {
 		conf.TestMode = true
-		return &conf, nil
 	}
 
 	if rsaKey, ok := os.LookupEnv("RSA_PUB_KEY"); ok {
@@ -94,17 +93,13 @@ func (c Config) validate() error {
 		return fmt.Errorf("invalid configuration, port must be set")
 	}
 
-	//If test mode is enabled, RsaPubKey is not required
-	if c.TestMode {
-		return nil
-	}
-
-	if c.PublicKeys == nil {
-		return fmt.Errorf("invalid configuration, missing public keys")
-	}
-
 	if c.TLS && (c.TLSCertPath == "" || c.TLSPrivateKeyPath == "") {
 		return fmt.Errorf("invalid configuration, TLS_PRIVATE_KEY_PATH and TLS_CERT_PATH must be provided if TLS is enabled")
+	}
+
+	//If test mode is enabled public keys are not required
+	if !c.TestMode && c.PublicKeys == nil {
+		return fmt.Errorf("invalid configuration, missing public keys")
 	}
 
 	return nil
