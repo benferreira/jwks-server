@@ -2,6 +2,7 @@ package app_test
 
 import (
 	"context"
+	"fmt"
 	"jwks-server/internal/app"
 	"net/http"
 	"os"
@@ -24,7 +25,7 @@ func TestRunTestMode(t *testing.T) {
 func TestRunPubKey(t *testing.T) {
 	defer unsetVars()
 	os.Setenv("DEBUG", "true")
-	os.Setenv("PORT", "45567")
+	os.Setenv("PORT", "45568")
 	os.Setenv("RSA_PUB_KEY", `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0j69to/Sy6u5HeZfBdBt
 esvO618W80K3HEo/mnapyhEJsqTQzLy5F+0OM1ZkZCrdFpXuN6jRNHP4tAVEdwg/
@@ -44,11 +45,13 @@ func run(t *testing.T) {
 	go func() {
 		client := http.Client{Timeout: time.Duration(1) * time.Second}
 
-		resp, err := client.Get("http://127.0.0.1:45567/api/v1/jwks.json")
+		baseUrl := fmt.Sprintf("http://127.0.0.1:%d", application.Configuration.Port)
+
+		resp, err := client.Get(fmt.Sprintf("%s/api/v1/jwks.json", baseUrl))
 		assert.Nil(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		resp, err = client.Get("http://127.0.0.1:45567/health")
+		resp, err = client.Get(fmt.Sprintf("%s/health", baseUrl))
 		assert.Nil(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
