@@ -43,6 +43,7 @@ func run(t *testing.T) {
 	application := app.Init()
 
 	go func() {
+		time.Sleep(1 * time.Second)
 		client := http.Client{Timeout: time.Duration(1) * time.Second}
 
 		baseUrl := fmt.Sprintf("http://127.0.0.1:%d", application.Configuration.Port)
