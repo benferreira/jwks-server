@@ -128,8 +128,10 @@ If you'd like to have the application serve TLS set the following environment va
 Example using self-signed certificates generated with `openssl`. **Do not use self-signed certs in production.**
 
 ```sh
-openssl req  -new  -newkey rsa:2048  -nodes  -keyout localhost.key  -out localhost.csr
-openssl  x509  -req  -days 365  -in localhost.csr  -signkey localhost.key  -out localhost.crt
+openssl req -x509 -out localhost.crt -keyout localhost.key \
+  -newkey rsa:2048 -nodes -sha256 \
+  -subj '/CN=localhost' -extensions EXT -config <( \
+   printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth\n")
 
 export TLS=true
 export TLS_CERT_PATH=./localhost.crt
