@@ -1,7 +1,7 @@
 package main
 
 import (
-	"jwks-server/internal/app"
+	"github.com/benferreira/jwks-server/internal/app"
 )
 
 func main() {

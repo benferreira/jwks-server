@@ -2,8 +2,9 @@ package jwks
 
 import (
 	"encoding/base64"
-	"jwks-server/internal/config"
-	"jwks-server/internal/rsa_helper"
+
+	"github.com/benferreira/jwks-server/internal/config"
+	"github.com/benferreira/jwks-server/internal/rsa_helper"
 )
 
 type JWKS struct {

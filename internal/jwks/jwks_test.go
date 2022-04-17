@@ -7,10 +7,11 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
-	"jwks-server/internal/config"
-	"jwks-server/internal/jwks"
-	"jwks-server/internal/rsa_helper"
 	"testing"
+
+	"github.com/benferreira/jwks-server/internal/config"
+	"github.com/benferreira/jwks-server/internal/jwks"
+	"github.com/benferreira/jwks-server/internal/rsa_helper"
 
 	"github.com/MicahParks/keyfunc"
 	"github.com/golang-jwt/jwt/v4"

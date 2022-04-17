@@ -3,12 +3,13 @@ package server_test
 import (
 	"context"
 	"io/ioutil"
-	"jwks-server/internal/config"
-	"jwks-server/internal/server"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/benferreira/jwks-server/internal/config"
+	"github.com/benferreira/jwks-server/internal/server"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -1,6 +1,6 @@
 # JWKS Server
 
-[![Test](https://github.com/benferreira/jwks-server/actions/workflows/test.yml/badge.svg)](https://github.com/benferreira/jwks-server/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/benferreira/jwks-server/branch/main/graph/badge.svg?token=1Z2RFP5OIM)](https://codecov.io/gh/benferreira/jwks-server)
+[![Go Report Card](https://goreportcard.com/badge/github.com/benferreira/jwks-server)](https://goreportcard.com/report/github.com/benferreira/jwks-server) [![Test](https://github.com/benferreira/jwks-server/actions/workflows/test.yml/badge.svg)](https://github.com/benferreira/jwks-server/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/benferreira/jwks-server/branch/main/graph/badge.svg?token=1Z2RFP5OIM)](https://codecov.io/gh/benferreira/jwks-server)
 
 Basic http server that will host a JWKS generated from a provided RSA public key.
 

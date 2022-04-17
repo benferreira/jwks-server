@@ -2,9 +2,10 @@ package config_test
 
 import (
 	"bytes"
-	"jwks-server/internal/config"
 	"strings"
 	"testing"
+
+	"github.com/benferreira/jwks-server/internal/config"
 
 	"github.com/stretchr/testify/assert"
 )

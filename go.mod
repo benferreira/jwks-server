@@ -1,10 +1,10 @@
-module jwks-server
+module github.com/benferreira/jwks-server
 
 go 1.17
 
 require (
-	github.com/MicahParks/keyfunc v1.0.3
-	github.com/golang-jwt/jwt/v4 v4.1.0
+	github.com/MicahParks/keyfunc v1.1.0
+	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/rs/zerolog v1.26.1
 	github.com/stretchr/testify v1.7.1
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b

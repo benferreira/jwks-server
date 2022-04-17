@@ -3,9 +3,9 @@ package server
 import (
 	"crypto/tls"
 	"fmt"
-	"jwks-server/internal/config"
 	"net/http"
 
+	"github.com/benferreira/jwks-server/internal/config"
 	"github.com/rs/zerolog/log"
 )
 
