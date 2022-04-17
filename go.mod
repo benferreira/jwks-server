@@ -1,4 +1,4 @@
-module jwks-server
+module github.com/benferreira/jwks-server
 
 go 1.17
 

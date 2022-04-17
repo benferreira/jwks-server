@@ -3,11 +3,12 @@ package app_test
 import (
 	"context"
 	"fmt"
-	"jwks-server/internal/app"
 	"net/http"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/benferreira/jwks-server/internal/app"
 
 	"github.com/stretchr/testify/assert"
 )

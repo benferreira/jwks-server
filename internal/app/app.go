@@ -2,10 +2,11 @@ package app
 
 import (
 	"encoding/json"
-	"jwks-server/internal/config"
-	"jwks-server/internal/jwks"
-	"jwks-server/internal/server"
 	"os"
+
+	"github.com/benferreira/jwks-server/internal/config"
+	"github.com/benferreira/jwks-server/internal/jwks"
+	"github.com/benferreira/jwks-server/internal/server"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
