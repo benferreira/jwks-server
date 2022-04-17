@@ -117,7 +117,7 @@ export RSA_KEYS_FILE=./keys.yaml
 
 ### TLS
 
-If you'd like to have the application serve TLS set the following environment variables and provide the appropriate values.
+If you'd like to have the application serve TLS, set the following environment variables and provide the appropriate values.
 
 | Environment Variable | Example Value | Description |
 | --- | --- | --- |
@@ -175,7 +175,7 @@ export PRETTY_LOGGING=true
 
 ### Test Mode
 
-If you want to it out without providing your own key, set the test mode environment variable, `TEST_MODE`. It will generate a random key and serve the JWKS:
+If you want to it out without providing your own key, set the test mode environment variable: `TEST_MODE`. It will generate a random key and serve the JWKS:
 
 ```sh
 export TEST_MODE=true
