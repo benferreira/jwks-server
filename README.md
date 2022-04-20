@@ -125,17 +125,15 @@ If you'd like to have the application serve TLS, set the following environment v
 | TLS_CERT_PATH | `./localhost.crt` | Path to certificate file |
 | TLS_PRIVATE_KEY_PATH | `./localhost.key` | Path to private key file |
 
-Example using self-signed certificates generated with `openssl`. **Do not use self-signed certs in production.**
+Example using self-signed certificates. **Do not use self-signed certs in production.**
 
 ```sh
-openssl req -x509 -out localhost.crt -keyout localhost.key \
-  -newkey rsa:2048 -nodes -sha256 \
-  -subj '/CN=localhost' -extensions EXT -config <( \
-   printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth\n")
+# Generate self-signed cert
+go run $GOROOT/src/crypto/tls/generate_cert.go --host 127.0.0.1,::1,localhost --ca --start-date "Jan 1 00:00:00 1970" --duration=1000000h
 
 export TLS=true
-export TLS_CERT_PATH=./localhost.crt
-export TLS_PRIVATE_KEY_PATH=./localhost.key
+export TLS_CERT_PATH=./cert.pem
+export TLS_PRIVATE_KEY_PATH=./key.pem
 
 ./bin/jwks-server
 ```
