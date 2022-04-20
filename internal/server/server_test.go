@@ -128,7 +128,7 @@ func TestServeTLS(t *testing.T) {
 
 	go func() {
 		client := http.Client{
-			Timeout:   time.Duration(1) * time.Second,
+			Timeout:   time.Duration(2) * time.Second,
 			Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
 		}
 
