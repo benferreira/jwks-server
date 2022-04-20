@@ -8,13 +8,15 @@ import (
 	"testing"
 	"time"
 
+	test_helper "github.com/benferreira/jwks-server/_test_helper"
 	"github.com/benferreira/jwks-server/internal/app"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRunTestMode(t *testing.T) {
-	defer unsetVars()
+	test_helper.UnsetTestEnvironment()
+	defer test_helper.UnsetTestEnvironment()
 	os.Setenv("DEBUG", "true")
 	os.Setenv("PORT", "45567")
 	os.Setenv("PRETTY_LOGGING", "true")
@@ -24,7 +26,8 @@ func TestRunTestMode(t *testing.T) {
 }
 
 func TestRunPubKey(t *testing.T) {
-	defer unsetVars()
+	test_helper.UnsetTestEnvironment()
+	defer test_helper.UnsetTestEnvironment()
 	os.Setenv("DEBUG", "true")
 	os.Setenv("PORT", "45568")
 	os.Setenv("RSA_PUB_KEY", `-----BEGIN PUBLIC KEY-----
@@ -61,13 +64,4 @@ func run(t *testing.T) {
 	}()
 
 	application.Run()
-}
-
-func unsetVars() {
-	os.Unsetenv("DEBUG")
-	os.Unsetenv("PORT")
-	os.Unsetenv("PRETTY_LOGGING")
-	os.Unsetenv("TEST_MODE")
-	os.Unsetenv("RSA_PUB_KEY")
-	os.Unsetenv("RSA_KEYS_FILE")
 }

@@ -8,16 +8,25 @@ import (
 
 type Config struct {
 	Debug      bool
-	Port       int
 	PrettyLog  bool
 	PublicKeys *RSAPubKeys
-	TestMode   bool
+	*ServerConfig
+	TestMode bool
+}
+
+type ServerConfig struct {
+	Port              int
+	TLS               bool
+	TLSPrivateKeyPath string
+	TLSCertPath       string
 }
 
 func NewConfigFromEnv() (*Config, error) {
 	conf := Config{
-		Debug:    false,
-		Port:     8000,
+		Debug: false,
+		ServerConfig: &ServerConfig{
+			Port: 8000,
+		},
 		TestMode: false,
 	}
 
@@ -39,9 +48,14 @@ func NewConfigFromEnv() (*Config, error) {
 		conf.PrettyLog = true
 	}
 
+	if _, ok := os.LookupEnv("TLS"); ok {
+		conf.TLS = true
+		conf.TLSPrivateKeyPath = os.Getenv("TLS_PRIVATE_KEY_PATH")
+		conf.TLSCertPath = os.Getenv("TLS_CERT_PATH")
+	}
+
 	if _, ok := os.LookupEnv("TEST_MODE"); ok {
 		conf.TestMode = true
-		return &conf, nil
 	}
 
 	if rsaKey, ok := os.LookupEnv("RSA_PUB_KEY"); ok {
@@ -79,12 +93,12 @@ func (c Config) validate() error {
 		return fmt.Errorf("invalid configuration, port must be set")
 	}
 
-	//If test mode is enabled, RsaPubKey is not required
-	if c.TestMode {
-		return nil
+	if c.TLS && (c.TLSCertPath == "" || c.TLSPrivateKeyPath == "") {
+		return fmt.Errorf("invalid configuration, TLS_PRIVATE_KEY_PATH and TLS_CERT_PATH must be provided if TLS is enabled")
 	}
 
-	if c.PublicKeys == nil {
+	//If test mode is enabled public keys are not required
+	if !c.TestMode && c.PublicKeys == nil {
 		return fmt.Errorf("invalid configuration, missing public keys")
 	}
 

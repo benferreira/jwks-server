@@ -1,6 +1,6 @@
 # JWKS Server
 
-[![Test](https://github.com/benferreira/jwks-server/actions/workflows/test.yml/badge.svg)](https://github.com/benferreira/jwks-server/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/benferreira/jwks-server/branch/main/graph/badge.svg?token=1Z2RFP5OIM)](https://codecov.io/gh/benferreira/jwks-server)
+[![Go Report Card](https://goreportcard.com/badge/github.com/benferreira/jwks-server)](https://goreportcard.com/report/github.com/benferreira/jwks-server) [![Test](https://github.com/benferreira/jwks-server/actions/workflows/test.yml/badge.svg)](https://github.com/benferreira/jwks-server/actions/workflows/test.yml) [![codecov](https://codecov.io/gh/benferreira/jwks-server/branch/main/graph/badge.svg?token=1Z2RFP5OIM)](https://codecov.io/gh/benferreira/jwks-server)
 
 Basic http server that will host a JWKS generated from a provided RSA public key.
 
@@ -11,10 +11,11 @@ Basic http server that will host a JWKS generated from a provided RSA public key
   - [Usage](#usage)
     - [Single public key](#single-public-key)
     - [Multiple Keys](#multiple-keys)
-    - [Routes](#routes)
+    - [TLS](#tls)
     - [Debug](#debug)
     - [Pretty Logging](#pretty-logging)
     - [Test Mode](#test-mode)
+  - [Routes](#routes)
   - [Docker](#docker)
     - [ARM variant](#arm-variant)
   - [Build](#build)
@@ -114,12 +115,33 @@ export RSA_KEYS_FILE=./keys.yaml
 {"level":"info","time":"2022-04-09T13:53:59-06:00","message":"serving localhost:8000"}
 ```
 
-### Routes
+### TLS
 
-The following routes are served:
+If you'd like to have the application serve TLS, set the following environment variables and provide the appropriate values.
 
-* /health
-* /api/v1/jwks.json
+| Environment Variable | Example Value | Description |
+| --- | --- | --- |
+| TLS | `true` | The presence of this variable will enable TLS |
+| TLS_CERT_PATH | `./localhost.crt` | Path to certificate file |
+| TLS_PRIVATE_KEY_PATH | `./localhost.key` | Path to private key file |
+
+Example using self-signed certificates. **Do not use self-signed certs in production.**
+
+```sh
+# Generate self-signed cert
+go run $GOROOT/src/crypto/tls/generate_cert.go --host 127.0.0.1,::1,localhost --ca --start-date "Jan 1 00:00:00 1970" --duration=1000000h
+
+export TLS=true
+export TLS_CERT_PATH=./cert.pem
+export TLS_PRIVATE_KEY_PATH=./key.pem
+
+./bin/jwks-server
+```
+
+```json
+{"level":"info","time":"2022-04-10T14:50:21-06:00","message":"serving localhost:8000"}
+{"level":"info","time":"2022-04-10T14:50:21-06:00","message":"TLS enabled"}
+```
 
 ### Debug
 
@@ -151,7 +173,7 @@ export PRETTY_LOGGING=true
 
 ### Test Mode
 
-If you want to it out without providing your own key, set the test mode environment variable, `TEST_MODE`. It will generate a random key and serve the JWKS:
+If you want to it out without providing your own key, set the test mode environment variable: `TEST_MODE`. It will generate a random key and serve the JWKS:
 
 ```sh
 export TEST_MODE=true
@@ -164,6 +186,13 @@ export TEST_MODE=true
 {"level":"debug","time":"2022-03-25T23:15:02-06:00","message":"parsed *rsa.PublicKey with remaining data: \"\""}
 {"level":"info","time":"2022-03-25T23:15:02-06:00","message":"serving localhost:8000"}
 ```
+
+## Routes
+
+The following routes are served:
+
+* /health
+* /api/v1/jwks.json
 
 ## Docker
 
