@@ -19,6 +19,7 @@ import (
 	"testing"
 	"time"
 
+	test_helper "github.com/benferreira/jwks-server/_test_helper"
 	"github.com/benferreira/jwks-server/internal/config"
 	"github.com/benferreira/jwks-server/internal/server"
 
@@ -30,9 +31,8 @@ func TestServe(t *testing.T) {
 	assert.Nil(t, err)
 
 	go func() {
-		client := http.Client{Timeout: time.Duration(1) * time.Second}
-
-		resp, err := client.Get("http://127.0.0.1:45566/health")
+		client := test_helper.NewTestHttpClient()
+		resp, err := client.GetWithRetry("http://127.0.0.1:45566/health")
 		assert.Nil(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
@@ -127,12 +127,10 @@ func TestServeTLS(t *testing.T) {
 	assert.Nil(t, err)
 
 	go func() {
-		client := http.Client{
-			Timeout:   time.Duration(2) * time.Second,
-			Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
-		}
+		client := test_helper.NewTestHttpClient()
+		client.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 
-		resp, err := client.Get("https://127.0.0.1:45569/health")
+		resp, err := client.GetWithRetry("https://127.0.0.1:45569/health")
 		assert.Nil(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
