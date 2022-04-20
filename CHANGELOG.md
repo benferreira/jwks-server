@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0](https://github.com/benferreira/jwks-server/compare/v0.2.4...v0.3.0) (2022-04-20)
+
+
+### Features
+
+* **server:** tls serving ([5850ca7](https://github.com/benferreira/jwks-server/commit/5850ca71539c2568021f1ae7cd6764dc4facc27b))
+
 ### [0.2.4](https://github.com/benferreira/jwks-server/compare/v0.2.3...v0.2.4) (2022-04-17)
 
 
