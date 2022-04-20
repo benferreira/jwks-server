@@ -26,4 +26,4 @@ coverage-report: test
 
 
 test: build
-	go test ./... -coverpkg=./... -race -covermode=atomic -coverprofile=coverage.out
+	go test ./... -coverpkg=./internal... -race -covermode=atomic -coverprofile=coverage.out

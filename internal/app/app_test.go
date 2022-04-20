@@ -48,15 +48,15 @@ func run(t *testing.T) {
 
 	go func() {
 		time.Sleep(1 * time.Second)
-		client := http.Client{Timeout: time.Duration(1) * time.Second}
+		client := test_helper.NewTestHttpClient()
 
 		baseUrl := fmt.Sprintf("http://127.0.0.1:%d", application.Configuration.Port)
 
-		resp, err := client.Get(fmt.Sprintf("%s/api/v1/jwks.json", baseUrl))
+		resp, err := client.GetWithRetry(fmt.Sprintf("%s/api/v1/jwks.json", baseUrl))
 		assert.Nil(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		resp, err = client.Get(fmt.Sprintf("%s/health", baseUrl))
+		resp, err = client.GetWithRetry(fmt.Sprintf("%s/health", baseUrl))
 		assert.Nil(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 

@@ -111,7 +111,7 @@ export RSA_KEYS_FILE=./keys.yaml
 ./bin/jwks-server
 ```
 
-```log
+```json
 {"level":"info","time":"2022-04-09T13:53:59-06:00","message":"serving localhost:8000"}
 ```
 
