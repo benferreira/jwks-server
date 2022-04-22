@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 
 	"gopkg.in/yaml.v3"
 )
@@ -28,7 +27,7 @@ func NewRSAPubKeys(pubKey string) (*RSAPubKeys, error) {
 }
 
 func NewRSAPubKeysFromFile(reader io.Reader) (*RSAPubKeys, error) {
-	keysBytes, err := ioutil.ReadAll(reader)
+	keysBytes, err := io.ReadAll(reader)
 
 	if err != nil {
 		return nil, err
