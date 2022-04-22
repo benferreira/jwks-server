@@ -9,7 +9,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"math/big"
 	"net"
@@ -69,7 +69,7 @@ func TestHealth(t *testing.T) {
 	assert.Equal(t, http.StatusOK, result.StatusCode)
 	assert.Equal(t, "application/json", result.Header.Get("content-type"))
 
-	body, err := ioutil.ReadAll(result.Body)
+	body, err := io.ReadAll(result.Body)
 	assert.Nil(t, err)
 	assert.Equal(t, server.HealthCheckUpJson(), string(body))
 }
@@ -98,7 +98,7 @@ func TestJWKS(t *testing.T) {
 	assert.Equal(t, "application/json", result.Header.Get("content-type"))
 	assert.NotEmpty(t, result.Header.Get("cache-control"))
 
-	body, err := ioutil.ReadAll(result.Body)
+	body, err := io.ReadAll(result.Body)
 	assert.Nil(t, err, "should not have errored")
 	assert.Equal(t, fakeJson, string(body))
 }
