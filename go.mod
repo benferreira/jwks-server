@@ -1,6 +1,6 @@
 module github.com/benferreira/jwks-server
 
-go 1.17
+go 1.18
 
 require (
 	github.com/MicahParks/keyfunc v1.1.0
