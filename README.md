@@ -215,7 +215,7 @@ make build-image-arm
 ## Build
 
 Requirements:
-* Golang >= 1.18.x
+* Golang >= 1.19.x
 
 
 ```sh
