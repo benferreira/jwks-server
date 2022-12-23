@@ -1,4 +1,4 @@
-.PHONY: build build-image build-image-arm clean coverage coverage-report test
+.PHONY: build build-image build-image-arm clean coverage coverage-report lint test
 
 build: clean
 	go build -o bin/ ./...
@@ -23,6 +23,10 @@ coverage: test
 
 coverage-report: test
 	go tool cover -html=coverage.out
+
+
+lint:
+	${GOPATH}/bin/staticcheck ./...
 
 
 test: build
